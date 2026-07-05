@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coaching Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0C;
+    --card:#F5F3EE;
+    --card-alt:#EAE7DF;
+    --ink:#111114;
+    --ink-mute:#6B6B6F;
+    --red:#FF1E3C;
+    --yellow:#FFC700;
+    --line:#D8D4C9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      repeating-linear-gradient(135deg, rgba(255,30,60,0.035) 0px, rgba(255,30,60,0.035) 2px, transparent 2px, transparent 40px);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:22px 14px 60px;
+  }
+  .app{ width:100%; max-width:460px; }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:16px;
+    padding:0 2px;
+  }
+  .brand .name{
+    font-family:'Anton',sans-serif;
+    font-size:16px;
+    letter-spacing:0.3px;
+    color:#fff;
+    text-transform:uppercase;
+    line-height:1.15;
+  }
+  .brand .name .dot{color:var(--red);}
+  .set-tracker{
+    font-family:'Anton',sans-serif;
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--yellow);
+    text-transform:uppercase;
+  }
+
+  .leds{
+    display:flex;
+    gap:5px;
+    margin-bottom:16px;
+  }
+  .led{
+    height:6px;
+    flex:1;
+    background:rgba(255,255,255,0.12);
+    border-radius:2px;
+    position:relative;
+    overflow:hidden;
+  }
+  .led.done::after{ content:''; position:absolute; inset:0; background:var(--red); }
+  .led.current::after{ content:''; position:absolute; inset:0; background:var(--yellow); }
+
+  .card{
+    background:var(--card);
+    border-radius:4px;
+    padding:30px 24px 26px;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height:6px;
+    background:linear-gradient(90deg, var(--red) 0%, var(--red) 60%, var(--yellow) 60%, var(--yellow) 100%);
+  }
+
+  .set-label{
+    font-family:'Anton',sans-serif;
+    font-size:13px;
+    letter-spacing:3px;
+    color:var(--red);
+    margin-bottom:4px;
+    text-transform:uppercase;
+  }
+  h2{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    font-size:30px;
+    letter-spacing:0.2px;
+    margin:0 0 6px;
+    text-transform:uppercase;
+    line-height:1.05;
+    color:var(--ink);
+  }
+  .sub{
+    color:var(--ink-mute);
+    font-size:13px;
+    margin-bottom:24px;
+    line-height:1.5;
+    padding-bottom:16px;
+    border-bottom:2px solid var(--line);
+  }
+
+  .q{ margin-bottom:22px; }
+  .q label{
+    display:block;
+    font-size:14.5px;
+    font-weight:700;
+    margin-bottom:9px;
+    line-height:1.35;
+    color:var(--ink);
+  }
+  .q .hint{
+    color:var(--ink-mute);
+    font-size:11.5px;
+    font-weight:400;
+    display:block;
+    margin-top:3px;
+    font-style:italic;
+  }
+
+  input[type=text], input[type=number], textarea{
+    width:100%;
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:6px;
+    padding:12px 13px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    resize:vertical;
+    transition:border-color .15s;
+  }
+  textarea{ min-height:78px; }
+  input:focus, textarea:focus{
+    outline:none;
+    border-color:var(--red);
+  }
+
+  .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{
+    padding:9px 15px;
+    border-radius:3px;
+    border:2px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    transition:.12s;
+    user-select:none;
+  }
+  .pill:hover{ border-color:var(--red); color:var(--red); }
+  .pill.selected{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--yellow);
+  }
+
+  .scale-row{ display:flex; gap:6px; }
+  .scale-btn{
+    flex:1;
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:4px;
+    border:2px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    font-family:'Anton',sans-serif;
+    font-size:15px;
+    cursor:pointer;
+    transition:.12s;
+  }
+  .scale-btn.selected{
+    background:var(--red);
+    border-color:var(--red);
+    color:#fff;
+  }
+  .scale-caption{
+    display:flex;
+    justify-content:space-between;
+    color:var(--ink-mute);
+    font-size:10.5px;
+    margin-top:6px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+
+  .nav{ display:flex; gap:10px; margin-top:auto; padding-top:24px; }
+  .btn{
+    flex:1;
+    padding:15px;
+    border-radius:5px;
+    border:none;
+    font-family:'Anton',sans-serif;
+    font-size:16px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn-primary{
+    background:var(--red);
+    color:#fff;
+  }
+  .btn-primary:hover{ filter:brightness(1.1); }
+  .btn-primary:active{ transform:scale(0.98); }
+  .btn-ghost{
+    background:transparent;
+    border:2px solid var(--ink);
+    color:var(--ink);
+    flex:0 0 90px;
+  }
+  .btn-ghost:hover{ background:var(--ink); color:#fff; }
+
+  .required-flag{
+    background:var(--yellow);
+    color:var(--ink);
+    font-size:9.5px;
+    font-weight:800;
+    padding:2px 6px;
+    border-radius:2px;
+    margin-left:6px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    vertical-align:middle;
+  }
+
+  .done-screen{ text-align:center; padding:50px 10px 30px; }
+  .done-screen .big{
+    font-family:'Anton',sans-serif;
+    font-size:40px;
+    color:var(--red);
+    margin-bottom:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .done-screen p{ color:var(--ink-mute); font-size:14px; line-height:1.6; max-width:320px; margin:0 auto; }
+
+  .coach-link{
+    text-align:center;
+    margin-top:20px;
+    font-size:10.5px;
+    color:rgba(255,255,255,0.25);
+    cursor:pointer;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    font-family:'Inter',sans-serif;
+  }
+  .coach-link:hover{ color:rgba(255,255,255,0.5); }
+
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.75);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal{
+    background:var(--card);
+    border-radius:6px;
+    padding:26px;
+    width:100%;
+    max-width:420px;
+    max-height:80vh;
+    overflow-y:auto;
+  }
+  .modal h3{
+    font-family:'Anton',sans-serif;
+    font-size:22px;
+    margin-top:0;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .modal input[type=text]{ margin-bottom:10px; }
+  .sub-entry{
+    border:2px solid var(--line);
+    border-radius:6px;
+    padding:12px 14px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:.12s;
+  }
+  .sub-entry:hover{ border-color:var(--red); }
+  .sub-entry .en-name{ font-weight:800; font-size:14px; }
+  .sub-entry .en-date{ color:var(--ink-mute); font-size:11px; }
+  .answer-block{ margin-bottom:14px; }
+  .answer-block .a-q{ color:var(--ink-mute); font-size:11.5px; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.3px; font-weight:600; }
+  .answer-block .a-a{ font-size:14px; }
+  .close-x{
+    float:right;
+    color:var(--ink-mute);
+    cursor:pointer;
+    font-size:20px;
+    font-weight:700;
+  }
+  .err{ color:var(--red); font-size:12px; margin-top:6px; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const SECTIONS = [
+  {
+    title: "Basic Stats",
+    sub: "Don't skip these, and try to be as detailed as possible — these numbers are exactly what I'll use to build your plan.",
+    questions: [
+      {id:'name', label:'Full name', type:'text', required:true},
+      {id:'age', label:'Age', type:'number', required:true},
+      {id:'sex', label:'Sex', type:'pills', options:['Male','Female'], required:true},
+      {id:'height', label:'Height', hint:'cm or ft/in', type:'text', required:true},
+      {id:'weight', label:'Current weight', hint:'kg or lbs', type:'text', required:true},
+      {id:'occupation', label:'Occupation / work type', hint:'desk job, on your feet, shift work, etc.', type:'text'},
+      {id:'daily_activity', label:'How active is your daily life outside of workouts?', hint:'1 = mostly sitting, 5 = on your feet constantly', type:'scale', min:1, max:5}
+    ]
+  },
+  {
+    title: "Goals & History",
+    sub: "Tell me what you actually want, and why now.",
+    questions: [
+      {id:'goal', label:'What’s your #1 goal right now?', type:'pills', options:['Fat loss','Muscle gain','Body recomposition','Strength','General health','Other']},
+      {id:'past_coaching', label:'Worked with a coach or structured program before? What worked or didn’t?', type:'textarea'},
+      {id:'confidence', label:'Confidence in your ability to stick to a plan?', hint:'1 = low, 10 = high', type:'scale', min:1, max:10}
+    ]
+  },
+  {
+    title: "Health Screening",
+    sub: "Non-negotiable — I need this to train you safely.",
+    questions: [
+      {id:'injuries', label:'Any injuries, past or current, I need to know about?', hint:'include old ones that flare up', type:'textarea', required:true},
+      {id:'conditions', label:'Any medical conditions?', hint:'thyroid, blood pressure, diabetes, PCOS, etc. — write "none" if none', type:'textarea', required:true},
+      {id:'medications', label:'Currently taking any medications or supplements?', type:'textarea', required:true},
+      {id:'food_allergies', label:'Any food allergies or intolerances?', type:'textarea'},
+      {id:'doctor_restrictions', label:'Has a doctor ever told you to avoid certain exercises?', type:'textarea'}
+    ]
+  },
+  {
+    title: "Lifestyle",
+    sub: "How your day actually runs — this shapes when and how we train.",
+    questions: [
+      {id:'weekday', label:'Walk me through a typical weekday, wake to sleep.', type:'textarea'},
+      {id:'weekend', label:'How does your weekend differ from your weekday?', type:'textarea'},
+      {id:'energy_time', label:'When during the day do you have the most energy to train?', type:'pills', options:['Early morning','Late morning','Afternoon','Evening','Late night']},
+      {id:'sleep', label:'Average hours of sleep per night', type:'pills', options:['<5','5-6','6-7','7-8','8+']},
+      {id:'stress', label:'Current stress levels', hint:'1 = very low, 5 = very high', type:'scale', min:1, max:5},
+      {id:'alcohol', label:'Do you drink alcohol? How often / how much?', type:'text'},
+      {id:'water', label:'How much water do you drink on an average day?', type:'text'}
+    ]
+  },
+  {
+    title: "Food",
+    sub: "What you actually eat, not what you think you should say.",
+    questions: [
+      {id:'normal_day_eating', label:'What does a normal day of eating look like right now? How many meals a day?', type:'textarea'},
+      {id:'most_common_food', label:'What food do you eat most often in a regular day?', type:'textarea'},
+      {id:'loved_foods', label:'Any foods you absolutely love that you’d be upset if I took away?', type:'textarea'},
+      {id:'cooking', label:'Do you cook your own food, or rely on eating out / delivery / convenience stores?', type:'text'},
+      {id:'prep_time', label:'Realistic time you can spend on food prep per day', type:'pills', options:['<10 min','10-20 min','20-40 min','40+ min']}
+    ]
+  },
+  {
+    title: "Training",
+    sub: "The logistics that decide what your program looks like.",
+    questions: [
+      {id:'train_days', label:'How many days can you realistically train every week?', type:'pills', options:['2','3','4','5','6+']},
+      {id:'train_time', label:'Morning or evening training?', type:'pills', options:['Morning','Evening','Flexible']},
+      {id:'weekend_gym', label:'Can you go to the gym on weekends?', type:'pills', options:['Yes','No','Sometimes']},
+      {id:'fav_muscle', label:'Favorite muscle to train? Any priority muscles?', type:'text'},
+      {id:'equipment', label:'Gym access, home equipment, or both? Describe what’s available.', type:'textarea'},
+      {id:'lifter_level', label:'How would you describe your training experience?', type:'pills', options:['Complete beginner','Beginner','Intermediate','Advanced']},
+      {id:'unsafe_lifts', label:'Any lifts/movements you currently can’t do or feel unsafe doing?', type:'textarea'}
+    ]
+  },
+  {
+    title: "Logistics",
+    sub: "Last one — how we'll actually work together.",
+    questions: [
+      {id:'checkin_time', label:'Preferred day/time for weekly check-in call', type:'text'},
+      {id:'comm_method', label:'Preferred communication for daily check-ins', type:'pills', options:['WhatsApp','Instagram DM','Other']},
+      {id:'photos', label:'Comfortable sending progress photos periodically for tracking?', type:'pills', options:['Yes','No','Only to myself']}
+    ]
+  }
+];
+
+let current = 0;
+let answers = {};
+let error = '';
+
+// Only update the data model — do NOT re-render on every keystroke.
+// Re-rendering on input was destroying and recreating the <input>,
+// which kicked the cursor out after every character.
+function saveAnswerSilent(id, val){
+  answers[id] = val;
+  error = '';
+}
+function saveAnswerAndRerender(id, val){
+  answers[id] = val;
+  error = '';
+  render();
+}
+
+function validateSection(){
+  const sec = SECTIONS[current];
+  for(const q of sec.questions){
+    if(q.required && !answers[q.id]){
+      error = 'Please fill in: ' + q.label;
+      return false;
+    }
+  }
+  return true;
+}
+
+function renderQuestion(q){
+  const val = answers[q.id] || '';
+  let inner = '';
+  if(q.type === 'text' || q.type === 'number'){
+    inner = `<input type="${q.type}" value="${val.toString().replace(/"/g,'&quot;')}" oninput="saveAnswerSilent('${q.id}', this.value)"/>`;
+  } else if(q.type === 'textarea'){
+    inner = `<textarea oninput="saveAnswerSilent('${q.id}', this.value)">${val}</textarea>`;
+  } else if(q.type === 'pills'){
+    inner = `<div class="pills">${q.options.map(o => `<div class="pill ${val===o?'selected':''}" onclick="saveAnswerAndRerender('${q.id}','${o}')">${o}</div>`).join('')}</div>`;
+  } else if(q.type === 'scale'){
+    let btns = '';
+    for(let i=q.min; i<=q.max; i++){
+      btns += `<div class="scale-btn ${val==i?'selected':''}" onclick="saveAnswerAndRerender('${q.id}',${i})">${i}</div>`;
+    }
+    inner = `<div class="scale-row">${btns}</div><div class="scale-caption"><span>${q.min}</span><span>${q.max}</span></div>`;
+  }
+  return `<div class="q">
+    <label>${q.label}${q.required?'<span class="required-flag">required</span>':''}${q.hint?`<span class="hint">${q.hint}</span>`:''}</label>
+    ${inner}
+  </div>`;
+}
+
+async function submitForm(){
+  try{
+    const res = await fetch('/api/submissions', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ answers })
+    });
+    if(!res.ok){
+      error = 'Something went wrong saving your response. Please try again.';
+      render();
+      return;
+    }
+    current = 'done';
+    render();
+  } catch(e){
+    error = 'Something went wrong saving your response. Please try again.';
+    render();
+  }
+}
+
+function next(){
+  if(!validateSection()){ render(); return; }
+  if(current < SECTIONS.length - 1){
+    current++;
+    render();
+  } else {
+    submitForm();
+  }
+}
+function back(){
+  if(current > 0){ current--; error=''; render(); }
+}
+
+// ---- Coach dashboard ----
+let showCoachModal = false;
+let coachUnlocked = false;
+let coachPasscode = '';
+let submissions = [];
+let selectedSubmission = null;
+
+function openCoachModal(){ showCoachModal = true; render(); }
+function closeCoachModal(){
+  showCoachModal = false;
+  coachUnlocked = false;
+  coachPasscode = '';
+  selectedSubmission = null;
+  error = '';
+  render();
+}
+async function tryUnlock(){
+  const input = document.getElementById('passcode-input');
+  const val = input ? input.value : '';
+  try{
+    const res = await fetch('/api/submissions', {
+      headers: { 'x-coach-passcode': val }
+    });
+    if(res.status === 401){
+      error = 'Wrong passcode';
+      render();
+      return;
+    }
+    if(!res.ok){
+      error = 'Something went wrong. Please try again.';
+      render();
+      return;
+    }
+    const data = await res.json();
+    coachPasscode = val;
+    coachUnlocked = true;
+    submissions = data.submissions || [];
+    error = '';
+  } catch(e){
+    error = 'Something went wrong. Please try again.';
+  }
+  render();
+}
+async function loadSubmissions(){
+  try{
+    const res = await fetch('/api/submissions', {
+      headers: { 'x-coach-passcode': coachPasscode }
+    });
+    if(res.ok){
+      const data = await res.json();
+      submissions = data.submissions || [];
+    } else {
+      submissions = [];
+    }
+  } catch(e){
+    submissions = [];
+  }
+}
+
+function renderCoachModal(){
+  if(!showCoachModal) return '';
+  if(!coachUnlocked){
+    return `<div class="modal-overlay" onclick="if(event.target===this) closeCoachModal()">
+      <div class="modal">
+        <span class="close-x" onclick="closeCoachModal()">&times;</span>
+        <h3>Coach Access</h3>
+        <p style="color:var(--ink-mute);font-size:13px;">Enter passcode to view submissions.</p>
+        <input type="text" id="passcode-input" placeholder="Passcode"/>
+        ${error ? `<div class="err">${error}</div>` : ''}
+        <button class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="tryUnlock()">Unlock</button>
+      </div>
+    </div>`;
+  }
+  if(selectedSubmission !== null){
+    const sub = submissions[selectedSubmission];
+    let blocks = '';
+    for(const sec of SECTIONS){
+      for(const q of sec.questions){
+        const a = sub.data.answers[q.id];
+        if(a){
+          blocks += `<div class="answer-block"><div class="a-q">${q.label}</div><div class="a-a">${a}</div></div>`;
+        }
+      }
+    }
+    return `<div class="modal-overlay" onclick="if(event.target===this) closeCoachModal()">
+      <div class="modal">
+        <span class="close-x" onclick="closeCoachModal()">&times;</span>
+        <h3>${sub.data.answers.name || 'Client'}</h3>
+        <p style="color:var(--ink-mute);font-size:12px;margin-top:-8px;">${new Date(sub.data.submittedAt).toLocaleString()}</p>
+        ${blocks}
+        <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="selectedSubmission=null; render()">&larr; Back to list</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="modal-overlay" onclick="if(event.target===this) closeCoachModal()">
+    <div class="modal">
+      <span class="close-x" onclick="closeCoachModal()">&times;</span>
+      <h3>Submissions (${submissions.length})</h3>
+      ${submissions.length===0 ? '<p style="color:var(--ink-mute);font-size:13px;">No submissions yet.</p>' : ''}
+      ${submissions.map((s,i) => `<div class="sub-entry" onclick="selectedSubmission=${i}; render()">
+        <div class="en-name">${s.data.answers.name || 'Unnamed'}</div>
+        <div class="en-date">${new Date(s.data.submittedAt).toLocaleString()}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+
+  if(current === 'done'){
+    app.innerHTML = `
+      <div class="brand"><div class="name">CLIENT'S ONBOARDING FORM</div></div>
+      <div class="card done-screen">
+        <div class="big">Logged.</div>
+        <p>Your intake is in. I'll go through everything and start building your plan — expect to hear from me within 24&ndash;48 hours.</p>
+      </div>
+      <div class="coach-link" onclick="openCoachModal()">Coach Access</div>
+      ${renderCoachModal()}
+    `;
+    return;
+  }
+
+  const sec = SECTIONS[current];
+  const total = SECTIONS.length;
+  let leds = '';
+  for(let i=0;i<total;i++){
+    let cls = 'led';
+    if(i < current) cls += ' done';
+    else if(i === current) cls += ' current';
+    leds += `<div class="${cls}"></div>`;
+  }
+
+  app.innerHTML = `
+    <div class="brand">
+      <div class="name">CLIENT'S ONBOARDING FORM</div>
+      <div class="set-tracker">Set ${current+1}/${total}</div>
+    </div>
+    <div class="leds">${leds}</div>
+    <div class="card">
+      <div class="set-label">Set ${String(current+1).padStart(2,'0')}</div>
+      <h2>${sec.title}</h2>
+      <div class="sub">${sec.sub}</div>
+      <div class="questions">${sec.questions.map(renderQuestion).join('')}</div>
+      ${error ? `<div class="err">${error}</div>` : ''}
+      <div class="nav">
+        ${current > 0 ? `<button class="btn btn-ghost" onclick="back()">Back</button>` : ''}
+        <button class="btn btn-primary" onclick="next()">${current === total-1 ? 'Submit' : 'Next'}</button>
+      </div>
+    </div>
+    <div class="coach-link" onclick="openCoachModal()">Coach Access</div>
+    ${renderCoachModal()}
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
