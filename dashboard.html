@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0C;
+    --card:#F5F3EE;
+    --card-alt:#EAE7DF;
+    --ink:#111114;
+    --ink-mute:#6B6B6F;
+    --red:#FF1E3C;
+    --yellow:#FFC700;
+    --line:#D8D4C9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      repeating-linear-gradient(135deg, rgba(255,30,60,0.035) 0px, rgba(255,30,60,0.035) 2px, transparent 2px, transparent 40px);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:22px 14px 60px;
+  }
+  .app{ width:100%; max-width:900px; }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:16px;
+    padding:0 2px;
+  }
+  .brand .name{
+    font-family:'Anton',sans-serif;
+    font-size:16px;
+    letter-spacing:0.3px;
+    color:#fff;
+    text-transform:uppercase;
+    line-height:1.15;
+  }
+  .back-link{
+    font-size:11px;
+    color:rgba(255,255,255,0.5);
+    text-decoration:none;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+  .back-link:hover{ color:#fff; }
+
+  .card{
+    background:var(--card);
+    border-radius:4px;
+    padding:30px 24px 26px;
+    min-height:200px;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height:6px;
+    background:linear-gradient(90deg, var(--red) 0%, var(--red) 60%, var(--yellow) 60%, var(--yellow) 100%);
+  }
+
+  h2{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    font-size:26px;
+    letter-spacing:0.2px;
+    margin:0 0 6px;
+    text-transform:uppercase;
+    line-height:1.05;
+    color:var(--ink);
+  }
+  .sub{
+    color:var(--ink-mute);
+    font-size:13px;
+    margin-bottom:20px;
+    line-height:1.5;
+  }
+
+  input[type=text]{
+    width:100%;
+    background:#fff;
+    border:2px solid var(--line);
+    border-radius:6px;
+    padding:12px 13px;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    transition:border-color .15s;
+  }
+  input:focus{ outline:none; border-color:var(--red); }
+
+  .btn{
+    padding:13px 18px;
+    border-radius:5px;
+    border:none;
+    font-family:'Anton',sans-serif;
+    font-size:14px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:.15s;
+    white-space:nowrap;
+  }
+  .btn-primary{ background:var(--red); color:#fff; }
+  .btn-primary:hover{ filter:brightness(1.1); }
+  .btn-primary:active{ transform:scale(0.98); }
+  .btn-ghost{
+    background:transparent;
+    border:2px solid var(--ink);
+    color:var(--ink);
+  }
+  .btn-ghost:hover{ background:var(--ink); color:#fff; }
+  .btn-yellow{
+    background:var(--yellow);
+    color:var(--ink);
+  }
+  .btn-yellow:hover{ filter:brightness(1.05); }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .err{ color:var(--red); font-size:12px; margin-top:8px; font-weight:600; }
+
+  .gate{ max-width:360px; margin:0 auto; }
+  .gate .btn{ width:100%; margin-top:10px; }
+
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin-bottom:18px;
+    padding-bottom:18px;
+    border-bottom:2px solid var(--line);
+  }
+  .toolbar input[type=text]{ flex:1; min-width:160px; }
+  .count-pill{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    white-space:nowrap;
+  }
+
+  .table-wrap{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th{
+    text-align:left;
+    padding:10px 12px;
+    font-family:'Inter',sans-serif;
+    font-size:10.5px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    border-bottom:2px solid var(--line);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  th:hover{ color:var(--ink); }
+  th .arrow{ color:var(--red); margin-left:3px; }
+  td{
+    padding:12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tr.row:hover{ background:var(--card-alt); cursor:pointer; }
+  .name-cell{ font-weight:800; }
+  .date-cell{ color:var(--ink-mute); white-space:nowrap; }
+  .empty-state{ text-align:center; color:var(--ink-mute); font-size:13px; padding:40px 10px; }
+
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.75);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal{
+    background:var(--card);
+    border-radius:6px;
+    padding:26px;
+    width:100%;
+    max-width:460px;
+    max-height:82vh;
+    overflow-y:auto;
+  }
+  .modal h3{
+    font-family:'Anton',sans-serif;
+    font-size:22px;
+    margin-top:0;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .answer-block{ margin-bottom:14px; }
+  .answer-block .a-q{ color:var(--ink-mute); font-size:11.5px; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.3px; font-weight:600; }
+  .answer-block .a-a{ font-size:14px; white-space:pre-wrap; }
+  .close-x{
+    float:right;
+    color:var(--ink-mute);
+    cursor:pointer;
+    font-size:20px;
+    font-weight:700;
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script src="/shared/sections.js"></script>
+<script>
+let unlocked = false;
+let passcode = '';
+let submissions = [];
+let error = '';
+let loading = false;
+let search = '';
+let sortField = 'submittedAt';
+let sortDir = 'desc';
+let selectedKey = null;
+
+async function tryUnlock(){
+  const input = document.getElementById('passcode-input');
+  const val = input ? input.value : '';
+  loading = true;
+  error = '';
+  render();
+  try{
+    const res = await fetch('/api/submissions', { headers: { 'x-coach-passcode': val } });
+    if(res.status === 401){
+      error = 'Wrong passcode';
+      loading = false;
+      render();
+      return;
+    }
+    if(!res.ok){
+      error = 'Something went wrong. Please try again.';
+      loading = false;
+      render();
+      return;
+    }
+    const data = await res.json();
+    passcode = val;
+    unlocked = true;
+    submissions = data.submissions || [];
+  } catch(e){
+    error = 'Something went wrong. Please try again.';
+  }
+  loading = false;
+  render();
+}
+
+async function refresh(){
+  loading = true;
+  render();
+  try{
+    const res = await fetch('/api/submissions', { headers: { 'x-coach-passcode': passcode } });
+    if(res.ok){
+      const data = await res.json();
+      submissions = data.submissions || [];
+    }
+  } catch(e){}
+  loading = false;
+  render();
+}
+
+function logout(){
+  unlocked = false;
+  passcode = '';
+  submissions = [];
+  search = '';
+  selectedKey = null;
+  error = '';
+  render();
+}
+
+function setSearch(val){
+  search = val;
+  render();
+}
+
+function toggleSort(field){
+  if(sortField === field){
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortField = field;
+    sortDir = field === 'submittedAt' ? 'desc' : 'asc';
+  }
+  render();
+}
+
+function getFiltered(){
+  let list = submissions.slice();
+  if(search.trim()){
+    const q = search.trim().toLowerCase();
+    list = list.filter(s => (s.data.answers.name || '').toLowerCase().includes(q));
+  }
+  list.sort((a,b) => {
+    let av, bv;
+    if(sortField === 'name'){
+      av = (a.data.answers.name || '').toLowerCase();
+      bv = (b.data.answers.name || '').toLowerCase();
+    } else {
+      av = new Date(a.data.submittedAt).getTime();
+      bv = new Date(b.data.submittedAt).getTime();
+    }
+    if(av < bv) return sortDir === 'asc' ? -1 : 1;
+    if(av > bv) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return list;
+}
+
+function csvEscape(val){
+  const s = (val === undefined || val === null) ? '' : String(val);
+  if(/[",\n]/.test(s)){
+    return '"' + s.replace(/"/g,'""') + '"';
+  }
+  return s;
+}
+
+function exportCSV(){
+  const rows = getFiltered();
+  const headers = [];
+  SECTIONS.forEach(sec => sec.questions.forEach(q => headers.push(q.label)));
+  headers.push('Submitted At');
+  const lines = [headers.map(csvEscape).join(',')];
+  rows.forEach(r => {
+    const line = [];
+    SECTIONS.forEach(sec => sec.questions.forEach(q => line.push(csvEscape(r.data.answers[q.id]))));
+    line.push(csvEscape(new Date(r.data.submittedAt).toLocaleString()));
+    lines.push(line.join(','));
+  });
+  const csv = lines.join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'client-submissions-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function sortArrow(field){
+  if(sortField !== field) return '';
+  return `<span class="arrow">${sortDir === 'asc' ? '▲' : '▼'}</span>`;
+}
+
+function renderDetailModal(){
+  if(selectedKey === null) return '';
+  const sub = submissions.find(s => s.key === selectedKey);
+  if(!sub) return '';
+  let blocks = '';
+  for(const sec of SECTIONS){
+    for(const q of sec.questions){
+      const a = sub.data.answers[q.id];
+      if(a){
+        blocks += `<div class="answer-block"><div class="a-q">${q.label}</div><div class="a-a">${a}</div></div>`;
+      }
+    }
+  }
+  return `<div class="modal-overlay" onclick="if(event.target===this){ selectedKey=null; render(); }">
+    <div class="modal">
+      <span class="close-x" onclick="selectedKey=null; render()">&times;</span>
+      <h3>${sub.data.answers.name || 'Client'}</h3>
+      <p style="color:var(--ink-mute);font-size:12px;margin-top:-8px;">${new Date(sub.data.submittedAt).toLocaleString()}</p>
+      ${blocks}
+    </div>
+  </div>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+
+  if(!unlocked){
+    app.innerHTML = `
+      <div class="brand">
+        <div class="name">COACH DASHBOARD</div>
+        <a class="back-link" href="/">&larr; Back to form</a>
+      </div>
+      <div class="card gate">
+        <h2>Coach Access</h2>
+        <div class="sub">Enter your passcode to view client submissions.</div>
+        <input type="text" id="passcode-input" placeholder="Passcode" onkeydown="if(event.key==='Enter') tryUnlock()"/>
+        ${error ? `<div class="err">${error}</div>` : ''}
+        <button class="btn btn-primary" ${loading ? 'disabled' : ''} onclick="tryUnlock()">${loading ? 'Checking...' : 'Unlock'}</button>
+      </div>
+    `;
+    return;
+  }
+
+  const filtered = getFiltered();
+
+  app.innerHTML = `
+    <div class="brand">
+      <div class="name">COACH DASHBOARD</div>
+      <a class="back-link" href="/">&larr; Back to form</a>
+    </div>
+    <div class="card">
+      <h2>Submissions</h2>
+      <div class="sub">All client intake forms, newest first by default.</div>
+      <div class="toolbar">
+        <input type="text" placeholder="Search by name..." value="${search.replace(/"/g,'&quot;')}" oninput="setSearch(this.value)"/>
+        <span class="count-pill">${filtered.length} of ${submissions.length}</span>
+        <button class="btn btn-yellow" onclick="exportCSV()" ${filtered.length===0 ? 'disabled' : ''}>Export CSV</button>
+        <button class="btn btn-ghost" ${loading ? 'disabled' : ''} onclick="refresh()">${loading ? 'Refreshing...' : 'Refresh'}</button>
+        <button class="btn btn-ghost" onclick="logout()">Log out</button>
+      </div>
+      ${error ? `<div class="err">${error}</div>` : ''}
+      ${filtered.length === 0 ? `
+        <div class="empty-state">${submissions.length === 0 ? 'No submissions yet.' : 'No submissions match your search.'}</div>
+      ` : `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="toggleSort('name')">Name ${sortArrow('name')}</th>
+                <th onclick="toggleSort('submittedAt')">Submitted ${sortArrow('submittedAt')}</th>
+                <th>Goal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map(s => `
+                <tr class="row" onclick="selectedKey='${s.key}'; render()">
+                  <td class="name-cell">${s.data.answers.name || 'Unnamed'}</td>
+                  <td class="date-cell">${new Date(s.data.submittedAt).toLocaleString()}</td>
+                  <td>${s.data.answers.goal || ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+    ${renderDetailModal()}
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
