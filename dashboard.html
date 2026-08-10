@@ -217,6 +217,7 @@
     font-size:20px;
     font-weight:700;
   }
+  .copy-btn{ width:100%; margin:14px 0 18px; }
 </style>
 </head>
 <body>
@@ -233,6 +234,7 @@ let search = '';
 let sortField = 'submittedAt';
 let sortDir = 'desc';
 let selectedKey = null;
+let copyFeedback = '';
 
 async function tryUnlock(){
   const input = document.getElementById('passcode-input');
@@ -363,6 +365,50 @@ function sortArrow(field){
   return `<span class="arrow">${sortDir === 'asc' ? '▲' : '▼'}</span>`;
 }
 
+function buildClientText(sub){
+  const lines = [];
+  lines.push(sub.data.answers.name || 'Client');
+  lines.push('Submitted: ' + new Date(sub.data.submittedAt).toLocaleString());
+  lines.push('');
+  for(const sec of SECTIONS){
+    for(const q of sec.questions){
+      const a = sub.data.answers[q.id];
+      if(a){
+        lines.push(q.label);
+        lines.push(String(a));
+        lines.push('');
+      }
+    }
+  }
+  return lines.join('\n').trim();
+}
+
+async function copyClientData(key){
+  const sub = submissions.find(s => s.key === key);
+  if(!sub) return;
+  const text = buildClientText(sub);
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    copyFeedback = 'Copied!';
+  } catch(e){
+    copyFeedback = 'Copy failed';
+  }
+  render();
+  setTimeout(() => { copyFeedback = ''; render(); }, 1500);
+}
+
 function renderDetailModal(){
   if(selectedKey === null) return '';
   const sub = submissions.find(s => s.key === selectedKey);
@@ -381,6 +427,7 @@ function renderDetailModal(){
       <span class="close-x" onclick="selectedKey=null; render()">&times;</span>
       <h3>${sub.data.answers.name || 'Client'}</h3>
       <p style="color:var(--ink-mute);font-size:12px;margin-top:-8px;">${new Date(sub.data.submittedAt).toLocaleString()}</p>
+      <button class="btn btn-yellow copy-btn" onclick="copyClientData('${selectedKey}')">${copyFeedback || 'Copy All'}</button>
       ${blocks}
     </div>
   </div>`;
