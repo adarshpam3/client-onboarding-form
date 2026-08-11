@@ -52,6 +52,7 @@ const SECTIONS = [
       {id:'normal_day_eating', label:'What does a normal day of eating look like right now? How many meals a day?', type:'textarea'},
       {id:'most_common_food', label:'What food do you eat most often in a regular day?', type:'textarea'},
       {id:'loved_foods', label:'Any foods you absolutely love that you’d be upset if I took away?', type:'textarea'},
+      {id:'protein_issues', label:'Do you have any problem with protein like bloating issues or anything?', type:'textarea'},
       {id:'cooking', label:'Do you cook your own food, or rely on eating out / delivery / convenience stores?', type:'text'},
       {id:'prep_time', label:'Realistic time you can spend on food prep per day', type:'pills', options:['<10 min','10-20 min','20-40 min','40+ min']}
     ]
